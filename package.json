@@ -1,0 +1,1 @@
+{"name":"chu-dich-64-que","version":"1.0.0","private":true,"scripts":{"test":"node tests/test.cjs"}}

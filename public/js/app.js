@@ -1,0 +1,19 @@
+"use strict";
+const HEX=window.HEX64_FULL;
+const TRIGRAM={Qian:[1,1,1],Dui:[1,1,0],Li:[1,0,1],Zhen:[1,0,0],Xun:[0,1,1],Kan:[0,1,0],Gen:[0,0,1],Kun:[0,0,0]};
+const key=a=>a.join("");
+const INDEX=new Map(HEX.map(h=>[key([...TRIGRAM[h.ha],...TRIGRAM[h.thuong]]),h]));
+if(HEX.length!==64||INDEX.size!==64)throw Error("Dữ liệu quẻ không hợp lệ");
+const el=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function coin(){let a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]<2147483648?1:0}
+function castLine(){let n=coin()+coin()+coin();return {num:[6,8,7,9][n],val:n>=2?1:0,moving:n===0||n===3}}
+function castHex(){return Array.from({length:6},castLine)}
+function lookup(lines){return INDEX.get(key(lines.map(x=>typeof x==="number"?x:x.val)))}
+function change(lines){return lines.map(x=>x.moving?1-x.val:x.val)}
+function strokes(lines){return [...lines].reverse().map((x,i)=>{let v=typeof x==="number"?x:x.val,m=typeof x==="number"?false:x.moving;return '<div class="line '+(v?'yang':'yin')+(m?' moving':'')+'"><span class="strokes"><i class="stroke"></i>'+(v?'':'<i class="stroke"></i>')+'</span><small>Hào '+(6-i)+(m?' · động':'')+'</small></div>'}).join("")}
+function card(h,lines){return '<div class="hexcard"><div class="symbol">'+h.symbol+'</div><h2>'+h.id+'. '+esc(h.han)+' · '+esc(h.hanViet)+'</h2>'+strokes(lines)+'<p class="quote">'+esc(h.guaCi)+'</p></div>'}
+function cast(){let lines=castHex(),a=lookup(lines),b=lookup(change(lines)),moving=lines.map((x,i)=>x.moving?i:-1).filter(i=>i>=0),q=el("question").value.trim();el("result").innerHTML='<small>KẾT QUẢ GIEO QUẺ</small><h2>'+esc(q||"Một lần gieo quẻ")+'</h2><div class="dual">'+card(a,lines)+card(b,change(lines))+'</div><h3>Hào động</h3>'+(moving.length?moving.map(i=>'<p class="line-text">Hào '+(i+1)+': '+esc(a.lines[i])+'</p>').join(""):'<p>Quẻ tĩnh, không có hào động.</p>');el("result").hidden=false;el("result").scrollIntoView({behavior:"smooth"})}
+function detail(h){el("detail").innerHTML='<small>VĂN BẢN CHU DỊCH</small><h2>'+h.id+'. '+esc(h.han)+' · '+esc(h.hanViet)+'</h2>'+card(h,[...TRIGRAM[h.ha],...TRIGRAM[h.thuong]])+'<h3>Lục hào</h3>'+h.lines.map((s,i)=>'<p class="line-text">'+(i<6?'Hào '+(i+1):'Dụng hào')+': '+esc(s)+'</p>').join("");el("detail").hidden=false;el("detail").scrollIntoView({behavior:"smooth"})}
+function list(){let search=el("search").value.toLocaleLowerCase("vi");el("hexlist").replaceChildren();for(let h of HEX.filter(x=>[x.id,x.han,x.hanViet].some(v=>String(v).toLocaleLowerCase("vi").includes(search)))){let b=document.createElement("button");b.className="tile";b.innerHTML='<span class="sym">'+h.symbol+'</span><span>'+h.id+'. '+esc(h.han)+'</span><span class="viet">'+esc(h.hanViet)+'</span>';b.addEventListener("click",()=>detail(h));el("hexlist").append(b)}}
+el("cast").addEventListener("click",cast);el("reset").addEventListener("click",()=>{el("question").value="";el("result").hidden=true;el("detail").hidden=true});el("search").addEventListener("input",list);list();
