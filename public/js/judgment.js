@@ -1,53 +1,25 @@
 "use strict";
-// Luận giải quy tắc, tham khảo cấu trúc từ tài liệu người dùng cung cấp.
-// Đây không phải dự báo chắc chắn hoặc hệ thống Mai Hoa Dịch Số đầy đủ.
 (function(root){
-  const NATURE={
-    1:"Cương kiện, chủ động và bền bỉ",2:"Nhu thuận, tích lũy và nâng đỡ",
-    3:"Khởi đầu nhiều khó khăn, cần kiên nhẫn",5:"Chờ đợi đúng thời điểm",
-    11:"Thông thuận, giao hòa",12:"Bế tắc, cần xét lại đường tiến",
-    14:"Phong phú, có nguồn lực",15:"Khiêm nhường, biết tiết chế",
-    29:"Gặp hiểm, cần thận trọng",30:"Sáng rõ nhưng cần giữ sự ổn định",
-    31:"Cảm ứng, cần chân thành",47:"Bị hạn chế, cần giữ vững",
-    54:"Quan hệ chưa cân xứng, cần cân nhắc",63:"Việc thành nhưng phải giữ gìn",
-    64:"Việc chưa hoàn tất, cần chuẩn bị thêm"
-  };
-  const GOOD=new Set([1,11,14,15,19,24,41,42,43,44,45,46,50,55,56,57,58,59,60,61,62,63]);
-  const BAD=new Set([12,20,23,29,36,39,47,48,54,64]);
-  function nature(h){return NATURE[h.id]||"Cần suy xét quẻ từ và từng hào trước khi hành động"}
-  function verdict(a,b){
-    let score=[a,b].filter(Boolean).reduce((n,h)=>n+(GOOD.has(h.id)?1:BAD.has(h.id)?-1:0),0);
-    if(score>=2)return "ĐẠI CÁT — Thiên về thuận lợi; vẫn cần ứng xử đúng mực.";
-    if(score===1)return "TIỂU CÁT — Có tín hiệu thuận, nên chuẩn bị chu đáo.";
-    if(score===0)return "BÌNH — Chưa thể kết luận tốt xấu; chú trọng hành động thực tế.";
-    if(score===-1)return "TIỂU HUNG — Có trở ngại, nên thận trọng và điều chỉnh.";
-    return "ĐẠI HUNG — Nhiều điều cần dè chừng; không nên quyết định nóng vội.";
-  }
-  function advice(a,question){
-    const q=String(question||"").toLocaleLowerCase("vi");
-    if(/tình cảm|tình yêu|hôn nhân|người yêu/.test(q))return "Về tình cảm, nên đối thoại chân thành, tôn trọng người liên quan và không suy diễn ý định người khác chỉ từ quẻ.";
-    if(/công việc|sự nghiệp|làm ăn|kinh doanh|đầu tư/.test(q))return a.id===5?"Quẻ Nhu nhấn mạnh thời điểm chín muồi; hãy đánh giá nguồn lực, kế hoạch và rủi ro trước khi tiến.":"Về công việc, dùng quẻ từ để tự rà soát thời cơ, nguồn lực và trở ngại; dựa vào dữ kiện thực tế khi quyết định.";
-    if(/sức khỏe|bệnh|thuốc/.test(q))return "Về sức khỏe, quẻ chỉ dùng để suy ngẫm; nên tham khảo chuyên môn y tế thay vì quyết định điều trị theo quẻ.";
-    return "Đối chiếu quẻ từ với hoàn cảnh thực tế, lắng nghe các bên liên quan và chọn bước đi có thể kiểm chứng.";
-  }
-  function movingNote(i,line){
-    if(i===4)return "Hào 5 thường được liên hệ với vị trí chủ đạo, trách nhiệm và quyết định lớn; cần xem nguyên văn trong bối cảnh.";
-    if(i===1)return "Hào 2 thường liên hệ vai trò ở trung vị, sự phối hợp và thực hiện; cần xem nguyên văn trong bối cảnh.";
-    if(/潛龍勿用/.test(line))return "Tiềm long vật dụng: chưa đến lúc hành động lớn; nên tích lũy và chuẩn bị.";
-    if(/飛龍在天/.test(line))return "Phi long tại thiên: hình tượng thời cơ phát huy năng lực; vẫn cần giữ sự tỉnh táo.";
-    return "Hào động cho biết điểm chuyển trong tượng quẻ; hãy đọc nguyên văn để suy ngẫm về tình huống hiện tại.";
-  }
-  function generateJudgment(a,b,indices,question){
-    if(!a||!Array.isArray(indices))throw Error("Thiếu dữ liệu luận quẻ");
-    const hasChange=indices.length>0;
-    return {
-      body:"Quẻ chính "+a.hanViet+": "+nature(a)+". Tượng trưng cho tình hình đang xét.",
-      application:hasChange?"Quẻ biến "+b.hanViet+": "+nature(b)+". Đây là chiều hướng biểu tượng khi các hào động đổi âm dương.":"Quẻ tĩnh: không có hào động; đọc quẻ chính làm trọng tâm, không tự suy ra kết cục cố định.",
-      lines:indices.map(i=>({position:i+1,text:a.lines[i]||"",note:movingNote(i,a.lines[i]||"")})),
-      advice:advice(a,question),
-      verdict:verdict(a,hasChange?b:null),
-      disclaimer:"Luận giải tự động dựa trên các quy tắc giản lược trong tài liệu, không phải dự đoán tương lai hay hệ thống Ngũ hành/Thể–Dụng chuyên sâu."
-    };
-  }
-  root.generateJudgment=generateJudgment;
+const GOOD=new Set([1,11,14,15,19,24,41,42,43,44,45,46,50,55,56,57,58,59,60,61,62,63]);
+const BAD=new Set([12,20,23,29,36,39,47,48,54,64]);
+const themes={
+vi:{default:"Xem kỹ quẻ từ và hào động trong hoàn cảnh cụ thể.",body:h=>"Quẻ chính "+h+": tượng trưng cho hiện trạng và những điều cần suy xét.",change:h=>"Quẻ biến "+h+": gợi một hướng chuyển hóa biểu tượng, không phải kết cục chắc chắn.",static:"Quẻ tĩnh: không có hào động; quẻ chính là trọng tâm.",fifth:"Hào 5 thường tượng trưng vị trí chủ đạo và trách nhiệm quyết định.",second:"Hào 2 thường gợi sự phối hợp và thực thi.",early:"Tiềm long vật dụng: nên chuẩn bị và chờ thời.",peak:"Phi long tại thiên: hình tượng thời cơ phát huy năng lực.",other:"Đọc nguyên văn hào động và liên hệ bối cảnh, tránh diễn dịch cứng nhắc.",romance:"Trong tình cảm, hãy trao đổi chân thành, tôn trọng ranh giới và không suy đoán người khác theo quẻ.",work:"Trong công việc, cần kiểm tra kế hoạch, nguồn lực và rủi ro thực tế trước khi quyết định.",health:"Đối với sức khỏe, hãy tham khảo chuyên gia y tế; quẻ không thay thế chẩn đoán.",general:"Đối chiếu ý nghĩa quẻ với sự thật và những hành động có thể kiểm chứng.",verdict:["ĐẠI HUNG — nhiều điều cần thận trọng.","TIỂU HUNG — có trở ngại cần điều chỉnh.","BÌNH — chưa rõ xu thế, cần xem xét thêm.","TIỂU CÁT — có dấu hiệu thuận lợi, nên chuẩn bị.","ĐẠI CÁT — tương đối thuận lợi, vẫn cần tỉnh táo."],disclaimer:"Luận giải quy tắc giản lược, không phải dự báo tương lai hoặc đánh giá Ngũ hành đầy đủ."},
+zh:{default:"应结合卦辞、动爻与具体情境仔细判断。",body:h=>"本卦「"+h+"」象征当前所处的状态与需要反思之处。",change:h=>"变卦「"+h+"」提示象征性的变化方向，不代表必然结果。",static:"无动爻，以本卦卦辞作为主要参考。",fifth:"五爻通常象征主导者的责任与重要决策。",second:"二爻通常涉及协调、执行和中位之道。",early:"潜龙勿用：宜积蓄力量，静候时机。",peak:"飞龙在天：象征发挥才能的时机，但仍须审慎。",other:"应结合爻辞原文及现实情境理解变化，勿机械断言。",romance:"感情方面宜真诚沟通、尊重边界，不应凭卦象推断他人心意。",work:"工作方面宜审视计划、资源与实际风险，慎重决策。",health:"健康问题应向医疗专业人员咨询，卦象不可替代诊断。",general:"结合实际证据和可执行的行动来理解卦象。",verdict:["大凶 — 需要格外谨慎。","小凶 — 可能有阻碍，宜调整。","平 — 趋势尚不明确。","小吉 — 略有有利迹象，宜周全准备。","大吉 — 象征相对顺遂，仍需冷静。"],disclaimer:"本解读采用简化规则，不构成未来预测，也不是完整的五行或体用体系。"},
+en:{default:"Read the original judgment and changing lines in context.",body:h=>"Primary hexagram "+h+" symbolizes the present situation and aspects worth reflecting on.",change:h=>"Changed hexagram "+h+" suggests a symbolic direction of change, not a guaranteed outcome.",static:"Static hexagram: no changing lines. Focus on the primary reading.",fifth:"Line five often symbolizes leadership, responsibility, and major decisions.",second:"Line two often concerns coordination, practical work, and balance.",early:"Hidden dragon: build strength and wait for a suitable moment.",peak:"Flying dragon: an image of opportunity, while remaining prudent.",other:"Interpret the changing line in its original context rather than making fixed predictions.",romance:"In relationships, communicate openly, respect boundaries, and avoid assuming another person's feelings from an oracle.",work:"At work, assess your plans, resources, and real-world risks before deciding.",health:"For health concerns, seek qualified medical advice; a hexagram is not a diagnosis.",general:"Compare the reading with concrete evidence and actionable options.",verdict:["VERY UNFAVORABLE — proceed with special caution.","CAUTION — obstacles may need adjustment.","NEUTRAL — the direction is unclear.","SOMEWHAT FAVORABLE — prepare carefully.","FAVORABLE — encouraging symbolism, but stay grounded."],disclaimer:"A simplified, rule-based reflection, not a prediction or a comprehensive Five Elements system."}
+};
+const nature={
+vi:{1:"cương kiện và chủ động",2:"nhu thuận và tích lũy",3:"khó khăn lúc khởi đầu",5:"chờ thời",11:"giao hòa",12:"bế tắc",14:"nguồn lực dồi dào",15:"khiêm nhường",29:"nguy hiểm và thận trọng",30:"sáng rõ",47:"hạn chế",63:"đã hoàn thành nhưng cần giữ gìn",64:"chưa hoàn tất"},
+zh:{1:"刚健进取",2:"柔顺承载",3:"起始艰难",5:"等待时机",11:"和通",12:"闭塞",14:"丰盛",15:"谦逊",29:"险难",30:"光明",47:"困顿",63:"既成仍需警惕",64:"尚未完成"},
+en:{1:"creative strength",2:"receptivity",3:"initial difficulty",5:"waiting",11:"harmony",12:"stagnation",14:"abundance",15:"modesty",29:"danger",30:"clarity",47:"constraint",63:"completion requiring care",64:"unfinished work"}
+};
+function generateJudgment(a,b,indices,question,lang="vi"){
+ if(!a||!Array.isArray(indices)||!root.I18N)throw Error("Missing interpretation data");
+ const l=themes[lang]||themes.vi,n=root.I18N.name;
+ const description=h=>(nature[lang]||nature.vi)[h.id]||l.default;
+ let score=[a,...(indices.length&&b?[b]:[])].reduce((v,h)=>v+(GOOD.has(h.id)?1:BAD.has(h.id)?-1:0),0);
+ const type=/tình cảm|tình yêu|hôn nhân|người yêu|love|relationship|marriage|爱情|感情|婚姻/i.test(question||"")?"romance":/công việc|sự nghiệp|kinh doanh|đầu tư|work|career|business|job|工作|事业|投资/i.test(question||"")?"work":/sức khỏe|bệnh|thuốc|health|illness|medical|健康|疾病/i.test(question||"")?"health":"general";
+ const notes=(i,s)=>/潛龍勿用/.test(s)?l.early:/飛龍在天/.test(s)?l.peak:i===4?l.fifth:i===1?l.second:l.other;
+ return {body:l.body(n(a,lang))+" "+description(a)+".",application:indices.length&&b?l.change(n(b,lang))+" "+description(b)+".":l.static,lines:indices.map(i=>({position:i+1,text:a.lines[i]||"",note:notes(i,a.lines[i]||"")})),advice:l[type],verdict:l.verdict[Math.max(0,Math.min(4,score+2))],disclaimer:l.disclaimer};
+}
+root.generateJudgment=generateJudgment;
 })(typeof window!=="undefined"?window:globalThis);
